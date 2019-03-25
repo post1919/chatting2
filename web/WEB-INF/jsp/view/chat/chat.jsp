@@ -120,8 +120,7 @@
 
                 // ONMESSAGE
                 server.onmessage = function(event) {
-                	
-<<<<<<< HEAD
+            
                 	console.log(event.data);
                 	
                     if(typeof event.data === 'string') {
@@ -129,28 +128,10 @@
                     	var message = JSON.parse(event.data);
                     	
                     	//채팅화면에 입력
-=======
-                    if(event.data instanceof ArrayBuffer) {
-                    	
-                        var dataview = new DataView(event.data);
-                        console.log(dataview);
-                    	
-                    	console.log(event.data);
-                        
-                        var message = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(event.data)));
-                        
-                    	/*
-                        for(var i=0; i<view.length; i=i+2){
-                          unicode = (view[i] * 255) + view[i] + view[i + 1];
-                          message = message + String.fromCharCode(unicode);
-                        }
-                        */
-                        
                         console.log('message => ');
                         console.log(message);
                         
                         //채팅화면에 입력
->>>>>>> 15a5cbd913b53025cb7f622f8a27842cd4bdbf46
                         objectMessage(message);
                         
                         if(message.type == 'JOINED') {

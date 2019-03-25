@@ -163,7 +163,7 @@ public class ChatEndpoint implements HttpSessionListener {
 
         try {
             Session other = this.close(session, message);
-            if(other != null) {
+            if(other != null) { 
             	other.close(new CloseReason(CloseReason.CloseCodes.UNEXPECTED_CONDITION, e.toString()));
             }
 
