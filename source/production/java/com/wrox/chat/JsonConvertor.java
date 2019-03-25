@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JsonEncoder implements Encoder.Text<ChatMessage>, Decoder.Text<ChatMessage> {
+public class JsonConvertor implements Encoder.Text<ChatMessage>, Decoder.Text<ChatMessage> {
 
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -31,11 +31,11 @@ public class JsonEncoder implements Encoder.Text<ChatMessage>, Decoder.Text<Chat
     public String encode(ChatMessage chatMessage) throws EncodeException {
 
     	try {
-    		System.out.println("encode");
-    		System.out.println("charMessage => " + chatMessage.toString());
+    		System.out.println("=> JsonConvertor.encode()");
+    		System.out.println("=> JsonConvertor.encode().charMessage => " + chatMessage.toString());
 
     		//POJO 객체일경우
-    		String jsonString = JsonEncoder.MAPPER.writeValueAsString(chatMessage);
+    		String jsonString = JsonConvertor.MAPPER.writeValueAsString(chatMessage);
     		return jsonString;
 
         } catch(JsonProcessingException e) {
@@ -49,7 +49,7 @@ public class JsonEncoder implements Encoder.Text<ChatMessage>, Decoder.Text<Chat
             jsonWriter.writeObject(payload);
             return stringWriter.toString();
         } catch (IOException ex) {
-            throw new EncodeException(payload, "JsonEncoder could not encode JsonObject", ex);
+            throw new EncodeException(payload, "JsonConvertor could not encode JsonObject", ex);
         }
         */
     }
@@ -57,24 +57,25 @@ public class JsonEncoder implements Encoder.Text<ChatMessage>, Decoder.Text<Chat
     @Override
 	public ChatMessage decode(String jsonString) throws DecodeException {
     	try {
-        	System.out.println("decode");
+        	System.out.println("=> JsonConvertor.decode()");
 
-        	ChatMessage charMessage = JsonEncoder.MAPPER.readValue(jsonString, ChatMessage.class);
+        	ChatMessage charMessage = JsonConvertor.MAPPER.readValue(jsonString, ChatMessage.class);
             return charMessage;
         } catch(IOException e) {
             throw new DecodeException((ByteBuffer)null, e.getMessage(), e);
         }
 	}
 
-    //@Override
-    //public void init(EndpointConfig endpointConfig) { }
-
     @Override
-    public void destroy() { }
+    public void destroy() {
+    	System.out.println("=> JsonConvertor.destroy()");
+    }
 
 	@Override
 	public boolean willDecode(String s) {
-		// TODO Auto-generated method stub
-		return false;
+		System.out.println("=> JsonConvertor.willDecode()");
+		System.out.println("=> JsonConvertor.willDecode().s => " + s);
+		
+		return (s != null);
 	}
 }

@@ -31,6 +31,7 @@ public class ChatServlet extends HttpServlet
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    	//캐시하지 못하도록 응답헤더 설정
         response.setHeader("Expires", "Thu, 1 Jan 1970 12:00:00 GMT");
         response.setHeader("Cache-Control","max-age=0, must-revalidate, no-cache");
 

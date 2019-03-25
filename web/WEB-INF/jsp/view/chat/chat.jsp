@@ -65,8 +65,6 @@
                     var log = $('<div>');
                     var date = message.timestamp == null ? '' : moment.unix(message.timestamp).format('h:mm:ss a');
                     
-                    message.user = '신동아';
-                    
                     if(message.user != null) {
                         var c = message.user == username ? 'user-me' : 'user-you';
                         

@@ -16,10 +16,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class ChatSession
 {
     private long sessionId;
-    private String customerUsername;
-    private Session customer;
-    private String representativeUsername;
-    private Session representative;
+    private String userName;
+    private Session user;
+    private String partnerName;
+    private Session partner;
     private ChatMessage creationMessage;
     private final List<ChatMessage> chatLog = new ArrayList<>();
 
@@ -31,36 +31,36 @@ public class ChatSession
         this.sessionId = sessionId;
     }
 
-    public String getCustomerUsername() {
-        return customerUsername;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setCustomerUsername(String customerUsername){
-        this.customerUsername = customerUsername;
+    public void setUserName(String userName){
+        this.userName = userName;
     }
 
-    public Session getCustomer(){
-        return customer;
+    public Session getUser(){
+        return user;
     }
 
-    public void setCustomer(Session customer){
-        this.customer = customer;
+    public void setUser(Session user){
+        this.user = user;
     }
 
-    public String getRepresentativeUsername() {
-        return representativeUsername;
+    public String getPartnerName() {
+        return partnerName;
     }
 
-    public void setRepresentativeUsername(String representativeUsername) {
-        this.representativeUsername = representativeUsername;
+    public void setPartnerName(String partnerName) {
+        this.partnerName = partnerName;
     }
 
-    public Session getRepresentative() {
-        return representative;
+    public Session getPartner() {
+        return partner;
     }
 
-    public void setRepresentative(Session representative) {
-        this.representative = representative;
+    public void setPartner(Session partner) {
+        this.partner = partner;
     }
 
     public ChatMessage getCreationMessage() {

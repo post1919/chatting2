@@ -12,28 +12,31 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>Customer Support :: <c:out value="${fn:trim(htmlTitle)}" /></title>
         <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" />
-        <link rel="stylesheet"
-              href="<c:url value="/resource/stylesheet/main.css" />" />
+        <link rel="stylesheet" href="<c:url value="/resource/stylesheet/main.css" />" />
         <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
-        <script type="text/javascript" lang="javascript">
+        
+        <script>
             var postInvisibleForm = function(url, fields) {
-                var form = $('<form id="mapForm" method="post"></form>')
-                        .attr({ action: url, style: 'display: none;' });
+                var form = $('<form id="mapForm" method="post"></form>').attr({ action: url, style: 'display: none;' });
                 for(var key in fields) {
-                    if(fields.hasOwnProperty(key))
-                        form.append($('<input type="hidden">').attr({
-                            name: key, value: fields[key]
-                        }));
+                    if(fields.hasOwnProperty(key)){
+                        form.append($('<input type="hidden">').attr({name: key, value: fields[key]}));
+                    }
                 }
+                
                 $('body').append(form);
+                
                 form.submit();
             };
+            
             var newChat = function() {
                 postInvisibleForm('<c:url value="/chat" />', { action: 'new' });
             };
         </script>
+        
         <jsp:invoke fragment="headContent" />
+        
     </head>
     <body>
         <h1>Multinational Widget Corporation</h1>
