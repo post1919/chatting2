@@ -1,0 +1,11 @@
+eclipse.preferences.version=1
+encoding//source/production/java=UTF-8
+encoding//source/production/resources=UTF-8
+encoding//source/test/java/unit=UTF-8
+encoding//web/WEB-INF/jsp=UTF-8
+encoding//web/WEB-INF/jsp/view/chat/chat.jsp=UTF-8
+encoding//web/WEB-INF/jsp/view/chat/list.jsp=UTF-8
+encoding//web/WEB-INF/tags/template/basic.tag=UTF-8
+encoding//web/WEB-INF/tags/template/loggedOut.tag=UTF-8
+encoding//web/WEB-INF/tags/template/main.tag=UTF-8
+encoding/<project>=UTF-8
