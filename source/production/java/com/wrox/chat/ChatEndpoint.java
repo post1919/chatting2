@@ -35,13 +35,13 @@ import javax.websocket.server.ServerEndpointConfig;
 public class ChatEndpoint implements HttpSessionListener {
 
 	private static final String HTTP_SESSION_PROPERTY = "com.castingn.ws.HTTP_SESSION";
-    private static final String WS_SESSION_PROPERTY = "com.castingn.http.WS_SESSION";
+    private static final String WS_SESSION_PROPERTY   = "com.castingn.http.WS_SESSION";
     private static long sessionIdSequence = 1L;
     private static final Object             sessionIdSequenceLock = new Object();
-    private static final Map<Long, ChatSession>      chatSessions = new Hashtable<>();
-    private static final Map<Session, ChatSession>       sessions = new Hashtable<>();
-    private static final Map<Session, HttpSession>   httpSessions = new Hashtable<>();
-    public  static final List<ChatSession>        pendingSessions = new ArrayList<>();
+    private static final Map<Long, ChatSession>      chatSessions = new Hashtable<>(); // 채팅방 하나의 관리 세션
+    private static final Map<Session, ChatSession>       sessions = new Hashtable<>(); // 채팅방세션들의 모음
+    private static final Map<Session, HttpSession>   httpSessions = new Hashtable<>(); // HttpSession에 웹소켓세션정보 넣을용도
+    public  static final List<ChatSession>        pendingSessions = new ArrayList<>(); // 대기중 채팅방 목록
 
 	/**
 	 * <pre>
@@ -55,12 +55,13 @@ public class ChatEndpoint implements HttpSessionListener {
     public void onOpen(Session session, @PathParam("sessionId") long sessionId){
 
 		System.out.println("=> ChatEndpoint.onOpen()");
+		System.out.println("=> ChatEndpoint.onOpen().sessionId => " + sessionId);
 
         HttpSession httpSession = (HttpSession)session.getUserProperties().get(ChatEndpoint.HTTP_SESSION_PROPERTY);
 
         try {
         	if(httpSession == null || httpSession.getAttribute("username") == null) {
-                session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "You are not logged in!"));
+                session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "로그인해주세요."));
                 return;
             }
 
@@ -71,6 +72,7 @@ public class ChatEndpoint implements HttpSessionListener {
             message.setUser(username);
             ChatSession chatSession;
 
+            //채팅방 오픈
             if(sessionId < 1){
                 message.setType(ChatMessage.Type.STARTED);
                 message.setContent(username + " 님이 참여했습니다.");
@@ -87,6 +89,7 @@ public class ChatEndpoint implements HttpSessionListener {
                 ChatEndpoint.pendingSessions.add(chatSession);
                 ChatEndpoint.chatSessions.put(chatSession.getSessionId(), chatSession);
 
+            //채팅방 참여
             } else {
                 message.setType(ChatMessage.Type.JOINED);
                 message.setContent(username + " 님이 참여했습니다.");
@@ -97,16 +100,23 @@ public class ChatEndpoint implements HttpSessionListener {
 
                 ChatEndpoint.pendingSessions.remove(chatSession);
 
+                //방장(고객) 참여했을때 내용
                 session.getBasicRemote().sendObject(chatSession.getCreationMessage());
+
+                //참여자(파트너) 참여내용
                 session.getBasicRemote().sendObject(message);
             }
 
-            ChatEndpoint.sessions.put(session, chatSession);
+            ChatEndpoint.sessions.put    (session, chatSession);
             ChatEndpoint.httpSessions.put(session, httpSession);
 
+            //HttpSession에 현재 채팅방 Session 추가
             this.getSessionsFor(httpSession).add(session);
 
+            //로그변수에 채팅내용 추가
             chatSession.log(message);
+
+            //뷰로 고고
             chatSession.getUser().getBasicRemote().sendObject(message);
 
             //session.getBasicRemote().sendObject(toJSON("참가 했습니다."));
@@ -130,7 +140,10 @@ public class ChatEndpoint implements HttpSessionListener {
     	System.out.println("=> ChatEndpoint.onMessage()");
     	System.out.println(message.toString());
 
+    	//채탕방 세션 가져옴
         ChatSession charSession = ChatEndpoint.sessions.get(session);
+
+        //상대방 세션
         Session other = this.getOtherSession(charSession, session);
 
         if(charSession != null && other != null) {
@@ -147,7 +160,7 @@ public class ChatEndpoint implements HttpSessionListener {
 
     /**
      * <pre>
-     * 
+     *
      * </pre>
      * @Method Name : onClose
      * @param session
@@ -195,7 +208,7 @@ public class ChatEndpoint implements HttpSessionListener {
 
         try {
             Session other = this.close(session, message);
-            if(other != null) { 
+            if(other != null) {
             	other.close(new CloseReason(CloseReason.CloseCodes.UNEXPECTED_CONDITION, e.toString()));
             }
 
@@ -217,7 +230,7 @@ public class ChatEndpoint implements HttpSessionListener {
     @Override
     public void sessionDestroyed(HttpSessionEvent event) {
     	System.out.println("=> ChatEndpoint.sessionDestroyed()");
-    			
+
         HttpSession httpSession = event.getSession();
 
         if(httpSession.getAttribute(WS_SESSION_PROPERTY) != null) {
@@ -236,9 +249,7 @@ public class ChatEndpoint implements HttpSessionListener {
                 } catch(IOException | EncodeException e) {
                     e.printStackTrace();
                 } finally {
-                    try {
-                        session.close();
-                    } catch(IOException ignore) { }
+                    try { session.close(); } catch(IOException ignore) { }
                 }
             }
         }
@@ -246,15 +257,15 @@ public class ChatEndpoint implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent event) {
-    	System.out.println("=> ChatEndpoint.sessionCreated()");
-    	/* do nothing */ 
+    	System.out.println("=> ChatEndpoint.sessionCreated()" + event.getSource());
+    	/* do nothing */
 	}
 
     @SuppressWarnings("unchecked")
     private synchronized ArrayList<Session> getSessionsFor(HttpSession session){
-    	
+
     	System.out.println("=> ChatEndpoint.getSessionsFor()");
-    	
+
         try {
             if(session.getAttribute(WS_SESSION_PROPERTY) == null) {
                 session.setAttribute(WS_SESSION_PROPERTY, new ArrayList<>());
@@ -277,10 +288,13 @@ public class ChatEndpoint implements HttpSessionListener {
      * @return
      */
     private Session close(Session session, ChatMessage message) {
-    	
+
     	System.out.println("=> ChatEndpoint.close()");
-    	
+
         ChatSession chatSession = ChatEndpoint.sessions.get(session);
+
+        System.out.println("=> ChatEndpoint.close().getSessionId() => " + chatSession.getSessionId());
+
         Session other           = this.getOtherSession(chatSession, session);
         ChatEndpoint.sessions.remove(session);
         HttpSession httpSession = ChatEndpoint.httpSessions.get(session);
@@ -319,7 +333,7 @@ public class ChatEndpoint implements HttpSessionListener {
         return other;
     }
 
-    
+
     /**
      * <pre>
      * 상대방 세션가져옴
@@ -330,9 +344,9 @@ public class ChatEndpoint implements HttpSessionListener {
      * @return
      */
     private Session getOtherSession(ChatSession createSesstion, Session session){
-    	
+
     	System.out.println("=> ChatEndpoint.getOtherSession()");
-    	
+
         return createSesstion == null ? null : (session == createSesstion.getUser() ? createSesstion.getPartner() : createSesstion.getUser());
     }
 
@@ -341,9 +355,9 @@ public class ChatEndpoint implements HttpSessionListener {
         public void modifyHandshake(ServerEndpointConfig config,
                                     HandshakeRequest request,
                                     HandshakeResponse response){
-        	
+
         	System.out.println("=> ChatEndpoint.EndpointConfigurator.modifyHandshake()");
-        	
+
             super.modifyHandshake(config, request, response);
 
             config.getUserProperties().put(ChatEndpoint.HTTP_SESSION_PROPERTY, request.getHttpSession());
@@ -352,9 +366,9 @@ public class ChatEndpoint implements HttpSessionListener {
 
     //String => ChatEndpoint.JSON 변환
     private JsonObject toJSON(String message){
-    	
+
     	System.out.println("=> ChatEndpoint.toJSON()");
-    	
+
         JsonObjectBuilder job = Json.createObjectBuilder();
         job.add("content",message);
         job.add("uuid", UUID.randomUUID().toString());

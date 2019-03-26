@@ -132,10 +132,13 @@
                         //채팅화면에 입력
                         objectMessage(message);
                         
+                        //참여한 경우
                         if(message.type == 'JOINED') {
                             otherJoined = true;
+                            
+                            //방장?? 에게 메세지 띄움
                             if(username != message.user){
-                                infoMessage('You are now chatting with ' + message.user + '.');
+                                infoMessage(message.user + ' 님과 대화를 시작하세요.');
                             }
                         }
                         

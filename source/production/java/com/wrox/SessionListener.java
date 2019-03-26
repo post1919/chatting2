@@ -1,17 +1,18 @@
 package com.wrox;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionIdListener;
 import javax.servlet.http.HttpSessionListener;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @WebListener
 public class SessionListener implements HttpSessionListener, HttpSessionIdListener
 {
     private SimpleDateFormat formatter =
-            new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss a");
 
     @Override
     public void sessionCreated(HttpSessionEvent e)

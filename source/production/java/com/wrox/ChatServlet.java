@@ -12,7 +12,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import com.wrox.chat.ChatEndpoint;
 
-@WebServlet(name = "chatServlet", urlPatterns = "/chat")
+@WebServlet(name = "chatServlet", urlPatterns = "/chat/{chatSessionId}")
 public class ChatServlet extends HttpServlet
 {
     @Override

@@ -7,9 +7,9 @@
         </c:when>
         <c:otherwise>
             Click on a chat request to accept it:<br /><br />
-            <c:forEach items="${sessions}" var="s">
+            <c:forEach var="session" items="${sessions}">
                 <a href="javascript:void 0;"
-                   onclick="join(${s.sessionId});">${s.customerUsername}</a><br />
+                   onclick="join(${session.sessionId});">${session.userName}</a><br />
             </c:forEach>
         </c:otherwise>
     </c:choose>

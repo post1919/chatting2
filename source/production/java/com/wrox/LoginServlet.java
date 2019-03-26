@@ -21,10 +21,10 @@ public class LoginServlet extends HttpServlet
     private static final Map<String, String> userDatabase = new Hashtable<>();
 
     static {
-        userDatabase.put("a", "1");
-        userDatabase.put("b", "1");
-        userDatabase.put("c", "1");
-        userDatabase.put("d", "1");
+        userDatabase.put("albatross", "1");
+        userDatabase.put("castingn", "1");
+        userDatabase.put("tspark", "1");
+        userDatabase.put("admin", "1");
     }
 
     @Override
